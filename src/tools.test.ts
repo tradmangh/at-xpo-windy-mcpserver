@@ -1,21 +1,45 @@
-import { handleCallTool } from './tools.js';
-import axios from 'axios';
-import { McpError, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
 import { jest } from '@jest/globals';
+
+// Mock SDK types
+jest.mock('@modelcontextprotocol/sdk/types.js', () => ({
+    McpError: class extends Error {
+        code: any;
+        constructor(code: any, message: any) {
+            super(message);
+            this.code = code;
+        }
+    },
+    ErrorCode: {
+        InvalidRequest: 'InvalidRequest',
+        MethodNotFound: 'MethodNotFound',
+        InternalError: 'InternalError'
+    }
+}));
+
+// Mock axios before importing it
+jest.mock('axios', () => ({
+    __esModule: true,
+    default: {
+        post: jest.fn(),
+        get: jest.fn()
+    }
+}));
+
+import axios from 'axios';
+import { handleCallTool } from './tools.js';
+// import { McpError } from '@modelcontextprotocol/sdk/types.js'; // Don't import real one if mocked? 
+// Actually we need to import it to use it in assertions, but it will be the mocked one.
+import { McpError } from '@modelcontextprotocol/sdk/types.js';
 
 describe('handleCallTool', () => {
     const apiKey = 'test_key';
-    let postSpy: any;
-    let getSpy: any;
+
+    // Helper to get mocked functions with any casting to avoid type errors
+    const mockPost = axios.post as any;
+    const mockGet = axios.get as any;
 
     beforeEach(() => {
         jest.clearAllMocks();
-        postSpy = jest.spyOn(axios, 'post');
-        getSpy = jest.spyOn(axios, 'get');
-    });
-
-    afterEach(() => {
-        jest.restoreAllMocks();
     });
 
     it('should call get_point_forecast with correct parameters', async () => {
@@ -26,11 +50,11 @@ describe('handleCallTool', () => {
             parameters: ["temp", "wind"]
         };
 
-        postSpy.mockResolvedValue({ data: { result: 'success' } });
+        mockPost.mockResolvedValue({ data: { result: 'success' } });
 
         const result = await handleCallTool('get_point_forecast', args, { pointForecast: apiKey });
 
-        expect(postSpy).toHaveBeenCalledWith("https://api.windy.com/api/point-forecast/v2", {
+        expect(mockPost).toHaveBeenCalledWith("https://api.windy.com/api/point-forecast/v2", {
             lat: 48.8566,
             lon: 2.3522,
             model: "gfs",
@@ -50,11 +74,11 @@ describe('handleCallTool', () => {
             lon: 2.3522,
         };
 
-        postSpy.mockResolvedValue({ data: { result: 'success' } });
+        mockPost.mockResolvedValue({ data: { result: 'success' } });
 
         await handleCallTool('get_point_forecast', args, { pointForecast: apiKey });
 
-        expect(postSpy).toHaveBeenCalledWith("https://api.windy.com/api/point-forecast/v2", {
+        expect(mockPost).toHaveBeenCalledWith("https://api.windy.com/api/point-forecast/v2", {
             lat: 48.8566,
             lon: 2.3522,
             model: "gfs",
@@ -71,11 +95,11 @@ describe('handleCallTool', () => {
             radius: 50
         };
 
-        getSpy.mockResolvedValue({ data: { result: 'webcams' } });
+        mockGet.mockResolvedValue({ data: { result: 'webcams' } });
 
         const result = await handleCallTool('get_webcams', args, { webcams: apiKey });
 
-        expect(getSpy).toHaveBeenCalledWith(`https://api.windy.com/webcams/api/v3/webcams`, {
+        expect(mockGet).toHaveBeenCalledWith(`https://api.windy.com/webcams/api/v3/webcams`, {
             params: {
                 nearby: "48.8566,2.3522,50",
                 include: "images"
