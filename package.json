@@ -16,7 +16,7 @@
         "weather"
     ],
     "author": "",
-    "license": "ISC",
+    "license": "AGPL-3.0",
     "dependencies": {
         "@modelcontextprotocol/sdk": "^0.6.0",
         "axios": "^1.6.0",

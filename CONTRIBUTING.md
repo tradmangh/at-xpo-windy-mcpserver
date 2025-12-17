@@ -139,7 +139,7 @@ npm test
 ### Code Style
 
 - Follow the existing code style in the project
-- Use 4 spaces for indentation (as configured in tsconfig.json)
+- Use consistent indentation (typically 4 spaces)
 - Use meaningful variable and function names
 - Add comments for complex logic
 - Keep functions small and focused
