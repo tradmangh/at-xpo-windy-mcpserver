@@ -390,7 +390,7 @@ Whether it's bug reports, feature requests, documentation improvements, or code 
 . *Improve Documentation*: Help us make the docs better by submitting corrections or additions
 . *Share Feedback*: Let us know how you're using the Windy MCP Server
 
-For detailed contribution guidelines, see xref:CONTRIBUTING.adoc[CONTRIBUTING.adoc].
+For detailed contribution guidelines, see https://github.com/tradmangh/at-xpo-windy-mcpserver/blob/main/CONTRIBUTING.md[CONTRIBUTING.md].
 
 == License
 
